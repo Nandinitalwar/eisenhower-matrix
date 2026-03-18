@@ -8,265 +8,621 @@
     * { margin: 0; padding: 0; box-sizing: border-box; }
     body {
       font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-      background: #0f0f0f;
+      background: #0a0a0a;
       color: #e0e0e0;
       min-height: 100vh;
       padding: 24px;
-    }
-    header {
-      text-align: center;
-      margin-bottom: 24px;
-    }
-    header h1 {
-      font-size: 28px;
-      font-weight: 700;
-      color: #fff;
-      letter-spacing: -0.5px;
-    }
-    header .date {
-      font-size: 14px;
-      color: #888;
-      margin-top: 4px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
     }
 
-    /* Timer overlay */
-    #timer-overlay {
+    header {
+      text-align: center;
+      margin-bottom: 2px;
+    }
+    header h1 {
+      font-size: 20px;
+      font-weight: 300;
+      color: #fff;
+      letter-spacing: 4px;
+      text-transform: uppercase;
+    }
+    header .date {
+      font-size: 11px;
+      color: #444;
+      margin-top: 4px;
+      letter-spacing: 1px;
+    }
+    .subtitle {
+      text-align: center;
+      font-size: 11px;
+      color: #3a3a3a;
+      margin: 6px 0 12px;
+      font-style: italic;
+    }
+    .motivation-banner {
+      text-align: center;
+      margin: 0 0 16px;
+      font-size: 10px;
+      color: #2a2a2a;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+    }
+
+    /* ========== FULLSCREEN TIMER OVERLAY ========== */
+    .timer-overlay {
       display: none;
       position: fixed;
       top: 0; left: 0; right: 0; bottom: 0;
-      background: rgba(0,0,0,0.85);
+      background: rgba(0, 0, 0, 0.92);
       z-index: 1000;
-      justify-content: center;
-      align-items: center;
       flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 24px;
     }
-    #timer-overlay.active { display: flex; }
-    #timer-task-name {
-      font-size: 20px;
-      color: #fff;
-      margin-bottom: 16px;
-      text-align: center;
+    .timer-overlay.active { display: flex; }
+    .timer-overlay .to-task {
+      font-size: 18px;
+      color: #aaa;
+      font-weight: 300;
+      letter-spacing: 2px;
+      text-transform: uppercase;
       max-width: 500px;
+      text-align: center;
     }
-    #timer-display {
+    .timer-overlay .to-goal {
+      font-size: 11px;
+      color: #555;
+      letter-spacing: 1px;
+    }
+    .timer-overlay .to-time {
       font-size: 96px;
-      font-weight: 200;
+      font-weight: 100;
       color: #fff;
       font-variant-numeric: tabular-nums;
-      letter-spacing: 2px;
+      letter-spacing: 8px;
     }
-    #timer-progress {
-      width: 300px;
+    .timer-overlay .to-progress {
+      width: 320px;
       height: 4px;
-      background: #333;
+      background: #222;
       border-radius: 2px;
-      margin-top: 24px;
       overflow: hidden;
     }
-    #timer-progress-bar {
+    .timer-overlay .to-progress-fill {
       height: 100%;
       background: #6c63ff;
       border-radius: 2px;
       transition: width 1s linear;
     }
-    .timer-buttons {
-      margin-top: 32px;
+    .timer-overlay .to-buttons {
       display: flex;
-      gap: 12px;
+      gap: 16px;
+      margin-top: 12px;
     }
-    .timer-btn {
-      padding: 10px 28px;
+    .timer-overlay button {
+      padding: 12px 32px;
       border-radius: 8px;
       border: none;
       font-size: 14px;
-      font-weight: 600;
+      font-weight: 500;
       cursor: pointer;
-      transition: transform 0.1s;
-    }
-    .timer-btn:active { transform: scale(0.96); }
-    .timer-btn.pause { background: #6c63ff; color: #fff; }
-    .timer-btn.stop { background: #333; color: #ccc; }
-    .timer-btn.done { background: #2ecc71; color: #fff; }
-
-    /* Matrix grid */
-    .matrix {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      grid-template-rows: auto auto;
-      gap: 12px;
-      max-width: 1100px;
-      margin: 0 auto;
-    }
-    .axis-label-top {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 12px;
-      max-width: 1100px;
-      margin: 0 auto 6px;
-      text-align: center;
-    }
-    .axis-label-top span {
-      font-size: 11px;
+      letter-spacing: 1px;
       text-transform: uppercase;
-      letter-spacing: 2px;
-      color: #555;
+      transition: transform 0.1s, opacity 0.15s;
+    }
+    .timer-overlay button:active { transform: scale(0.95); }
+    .timer-overlay .to-pause { background: #6c63ff; color: #fff; }
+    .timer-overlay .to-done { background: #2ecc71; color: #fff; }
+    .timer-overlay .to-cancel { background: transparent; color: #555; border: 1px solid #333; }
+
+    /* ========== GRAPH ========== */
+    .graph-wrapper {
+      position: relative;
+      width: 720px;
+      height: 680px;
+      margin-top: 4px;
     }
 
-    .quadrant {
-      background: #1a1a1a;
-      border-radius: 12px;
-      padding: 16px;
-      min-height: 260px;
-      border: 2px solid transparent;
-      transition: border-color 0.2s, background 0.2s;
-    }
-    .quadrant.drag-over {
-      border-color: #6c63ff;
-      background: #1f1a2e;
-    }
-    .quadrant-header {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      margin-bottom: 12px;
-      padding-bottom: 8px;
+    .graph {
+      position: relative;
+      width: 100%;
+      height: 100%;
+      border-left: 1px solid #2a2a2a;
       border-bottom: 1px solid #2a2a2a;
+      overflow: visible;
     }
-    .quadrant-dot {
+
+    /* Quadrant backgrounds */
+    .quadrant-bg { position: absolute; }
+    .qbg-green {
+      top: 0; right: 0; width: 50%; height: 50%;
+      background: radial-gradient(ellipse at 70% 30%, rgba(46, 204, 113, 0.16) 0%, rgba(46, 204, 113, 0.04) 65%, transparent 100%);
+    }
+    .qbg-yellow {
+      top: 0; left: 0; width: 50%; height: 50%;
+      background: radial-gradient(ellipse at 30% 30%, rgba(241, 196, 15, 0.13) 0%, rgba(241, 196, 15, 0.03) 65%, transparent 100%);
+    }
+    .qbg-red {
+      bottom: 0; left: 0; width: 50%; height: 50%;
+      background: radial-gradient(ellipse at 30% 70%, rgba(231, 76, 60, 0.13) 0%, rgba(231, 76, 60, 0.03) 65%, transparent 100%);
+    }
+    .qbg-blue {
+      bottom: 0; right: 0; width: 50%; height: 50%;
+      background: radial-gradient(ellipse at 70% 70%, rgba(52, 152, 219, 0.13) 0%, rgba(52, 152, 219, 0.03) 65%, transparent 100%);
+    }
+
+    .grid-mid-x, .grid-mid-y { position: absolute; background: #1a1a1a; }
+    .grid-mid-x { left: 0; right: 0; top: 50%; height: 1px; }
+    .grid-mid-y { top: 0; bottom: 0; left: 50%; width: 1px; }
+
+    /* Quadrant corner labels */
+    .quadrant-label {
+      position: absolute;
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      pointer-events: none;
+    }
+    .ql-green  { top: 12px; right: 16px; color: rgba(46, 204, 113, 0.45); }
+    .ql-yellow { top: 12px; left: 16px; color: rgba(241, 196, 15, 0.40); }
+    .ql-red    { bottom: 12px; left: 16px; color: rgba(231, 76, 60, 0.40); }
+    .ql-blue   { bottom: 12px; right: 16px; color: rgba(52, 152, 219, 0.40); }
+
+    /* ========== DOTS ========== */
+    .dot-group {
+      position: absolute;
+      z-index: 10;
+      cursor: pointer;
+      transition: bottom 1s ease, left 0.3s ease;
+    }
+    .dot-group:hover { z-index: 30; }
+
+    .dot {
+      width: 14px;
+      height: 14px;
+      border-radius: 50%;
+      transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.3s;
+    }
+    .dot-group:hover .dot {
+      transform: scale(1.4);
+    }
+    .dot-group.expanded .dot {
+      transform: scale(2.8);
+      box-shadow: 0 0 32px currentColor;
+    }
+    .dot-group.completed .dot {
+      opacity: 0.25;
       width: 10px;
       height: 10px;
-      border-radius: 50%;
-      flex-shrink: 0;
     }
-    .quadrant-header h2 {
-      font-size: 13px;
-      font-weight: 600;
+
+    .dot-green  { background: #2ecc71; box-shadow: 0 0 8px rgba(46, 204, 113, 0.4); color: #2ecc71; }
+    .dot-yellow { background: #f1c40f; box-shadow: 0 0 8px rgba(241, 196, 15, 0.4); color: #f1c40f; }
+    .dot-red    { background: #e74c3c; box-shadow: 0 0 8px rgba(231, 76, 60, 0.4); color: #e74c3c; }
+    .dot-blue   { background: #3498db; box-shadow: 0 0 8px rgba(52, 152, 219, 0.4); color: #3498db; }
+
+    /* Timer-active dot */
+    .dot-group.timer-active .dot {
+      background: #6c63ff !important;
+      box-shadow: 0 0 12px rgba(108, 99, 255, 0.6);
+      animation: dot-pulse 2s ease-in-out infinite;
+    }
+    @keyframes dot-pulse {
+      0%, 100% { box-shadow: 0 0 8px rgba(108, 99, 255, 0.4); transform: scale(1); }
+      50% { box-shadow: 0 0 24px rgba(108, 99, 255, 0.8); transform: scale(1.3); }
+    }
+
+    /* Completion trail */
+    .completion-trail {
+      position: absolute;
+      width: 2px;
+      background: linear-gradient(to top, rgba(108, 99, 255, 0.1), rgba(108, 99, 255, 0.4));
+      z-index: 5;
+      border-radius: 1px;
+      pointer-events: none;
+    }
+
+    /* Tooltip on hover */
+    .tooltip {
+      display: none;
+      position: fixed;
+      background: #181818;
+      border: 1px solid #2a2a2a;
+      border-radius: 8px;
+      padding: 10px 14px;
+      z-index: 100;
+      min-width: 180px;
+      max-width: 280px;
+      pointer-events: none;
+      box-shadow: 0 8px 32px rgba(0,0,0,0.6);
+    }
+    .tooltip.visible { display: block; }
+    .tooltip-title { font-size: 13px; color: #eee; font-weight: 500; margin-bottom: 4px; }
+    .tooltip-meta { font-size: 10px; color: #666; text-transform: uppercase; letter-spacing: 1px; }
+
+    /* ========== EXPANDED DOT POPUP ========== */
+    .dot-popup {
+      display: none;
+      position: fixed;
+      background: #131313;
+      border: 1px solid #2a2a2a;
+      border-radius: 14px;
+      padding: 20px 24px;
+      z-index: 160;
+      min-width: 260px;
+      box-shadow: 0 16px 56px rgba(0,0,0,0.8);
+      text-align: center;
+    }
+    .dot-popup.visible { display: block; }
+    .dot-popup .dp-title {
+      font-size: 15px;
+      color: #eee;
+      font-weight: 500;
+      margin-bottom: 6px;
+    }
+    .dot-popup .dp-tag {
+      font-size: 10px;
+      color: #555;
       text-transform: uppercase;
       letter-spacing: 1px;
+      margin-bottom: 16px;
     }
-    .quadrant-header .subtitle {
-      font-size: 11px;
-      color: #666;
-      margin-left: auto;
+    .dot-popup .dp-goal-section {
+      margin-bottom: 16px;
+      text-align: left;
     }
-
-    /* Q1 - Urgent+Important (red) */
-    .q1 .quadrant-dot { background: #e74c3c; }
-    .q1 .quadrant-header h2 { color: #e74c3c; }
-
-    /* Q2 - Not Urgent+Important (blue) */
-    .q2 .quadrant-dot { background: #3498db; }
-    .q2 .quadrant-header h2 { color: #3498db; }
-
-    /* Q3 - Urgent+Not Important (orange) */
-    .q3 .quadrant-dot { background: #f39c12; }
-    .q3 .quadrant-header h2 { color: #f39c12; }
-
-    /* Q4 - Not Urgent+Not Important (gray) */
-    .q4 .quadrant-dot { background: #666; }
-    .q4 .quadrant-header h2 { color: #888; }
-
-    .task-list {
+    .dot-popup .dp-goal-label {
+      font-size: 9px;
+      color: #444;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      margin-bottom: 6px;
+    }
+    .dot-popup .dp-goal-select {
+      width: 100%;
+      background: #1a1a1a;
+      border: 1px solid #252525;
+      color: #aaa;
+      padding: 8px 10px;
+      border-radius: 6px;
+      font-size: 12px;
+      outline: none;
+      cursor: pointer;
+    }
+    .dot-popup .dp-goal-select:focus { border-color: #444; }
+    .dot-popup .dp-actions {
       display: flex;
       flex-direction: column;
-      gap: 6px;
+      gap: 8px;
     }
-
-    .task {
-      background: #242424;
-      border-radius: 8px;
-      padding: 10px 12px;
-      cursor: grab;
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      transition: transform 0.15s, box-shadow 0.15s, opacity 0.15s;
-      user-select: none;
-    }
-    .task:hover { background: #2a2a2a; transform: translateY(-1px); }
-    .task.dragging { opacity: 0.4; }
-    .task.completed .task-text { text-decoration: line-through; color: #555; }
-
-    .task-checkbox {
-      width: 18px;
-      height: 18px;
-      border-radius: 50%;
-      border: 2px solid #444;
-      flex-shrink: 0;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      transition: all 0.2s;
-    }
-    .task-checkbox:hover { border-color: #6c63ff; }
-    .task.completed .task-checkbox {
+    .dot-popup .dp-start {
       background: #6c63ff;
-      border-color: #6c63ff;
-    }
-    .task.completed .task-checkbox::after {
-      content: '\2713';
       color: #fff;
-      font-size: 11px;
-    }
-
-    .task-text {
-      flex: 1;
-      font-size: 14px;
-      color: #ddd;
-      line-height: 1.3;
-    }
-    .task-tag {
-      font-size: 10px;
-      padding: 2px 8px;
-      border-radius: 10px;
-      font-weight: 600;
-      flex-shrink: 0;
-    }
-    .tag-work { background: #1a2a1a; color: #4ade80; }
-    .tag-personal { background: #2a1a2a; color: #c084fc; }
-
-    .task-timer-btn {
-      background: none;
-      border: 1px solid #333;
-      color: #888;
-      border-radius: 6px;
-      padding: 3px 8px;
-      font-size: 11px;
+      border: none;
+      padding: 10px 28px;
+      border-radius: 8px;
+      font-size: 13px;
+      font-weight: 500;
       cursor: pointer;
-      flex-shrink: 0;
-      transition: all 0.15s;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      transition: transform 0.1s, box-shadow 0.15s;
+      width: 100%;
     }
-    .task-timer-btn:hover { border-color: #6c63ff; color: #6c63ff; }
-
-    /* Add task input */
-    .add-task-row {
+    .dot-popup .dp-start:hover {
+      box-shadow: 0 0 20px rgba(108, 99, 255, 0.4);
+    }
+    .dot-popup .dp-start:active { transform: scale(0.97); }
+    .dot-popup .dp-row {
       display: flex;
       gap: 8px;
-      margin-top: 8px;
     }
-    .add-task-input {
+    .dot-popup .dp-complete {
       flex: 1;
+      background: transparent;
+      color: #2ecc71;
+      border: 1px solid #2a3a2e;
+      padding: 8px 0;
+      border-radius: 8px;
+      font-size: 11px;
+      font-weight: 500;
+      cursor: pointer;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      transition: background 0.15s;
+    }
+    .dot-popup .dp-complete:hover { background: rgba(46, 204, 113, 0.1); }
+    .dot-popup .dp-delete {
+      flex: 1;
+      background: transparent;
+      color: #e74c3c;
+      border: 1px solid #3a2a2a;
+      padding: 8px 0;
+      border-radius: 8px;
+      font-size: 11px;
+      font-weight: 500;
+      cursor: pointer;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      transition: background 0.15s;
+    }
+    .dot-popup .dp-delete:hover { background: rgba(231, 76, 60, 0.1); }
+
+    /* ========== ADD-DOT POPUP (click on graph) ========== */
+    .add-dot-popup {
+      display: none;
+      position: fixed;
+      background: #131313;
+      border: 1px solid #2a2a2a;
+      border-radius: 10px;
+      padding: 12px 16px;
+      z-index: 160;
+      width: 240px;
+      box-shadow: 0 12px 48px rgba(0,0,0,0.7);
+    }
+    .add-dot-popup.visible { display: block; }
+    .add-dot-popup input {
+      width: 100%;
       background: #1a1a1a;
-      border: 1px solid #333;
-      border-radius: 6px;
+      border: 1px solid #252525;
+      color: #ccc;
       padding: 8px 10px;
-      color: #ddd;
+      border-radius: 6px;
       font-size: 13px;
       outline: none;
     }
-    .add-task-input:focus { border-color: #6c63ff; }
-    .add-task-input::placeholder { color: #555; }
-    .add-task-submit {
-      background: #333;
-      border: none;
-      color: #aaa;
-      border-radius: 6px;
-      padding: 8px 12px;
-      cursor: pointer;
-      font-size: 13px;
+    .add-dot-popup input:focus { border-color: #444; }
+    .add-dot-popup input::placeholder { color: #333; }
+
+    /* Context menu (right-click) */
+    .context-menu {
+      display: none;
+      position: fixed;
+      background: #151515;
+      border: 1px solid #252525;
+      border-radius: 8px;
+      padding: 6px 0;
+      z-index: 200;
+      min-width: 170px;
+      box-shadow: 0 12px 40px rgba(0,0,0,0.6);
     }
-    .add-task-submit:hover { background: #6c63ff; color: #fff; }
+    .context-menu.visible { display: block; }
+    .context-menu button {
+      display: block; width: 100%; text-align: left;
+      background: none; border: none; color: #bbb;
+      padding: 8px 16px; font-size: 12px; cursor: pointer;
+      transition: background 0.1s;
+    }
+    .context-menu button:hover { background: rgba(255,255,255,0.05); color: #fff; }
+    .context-menu .divider { height: 1px; background: #222; margin: 4px 0; }
+
+    /* ========== BACKLOG STRIP ========== */
+    .backlog-strip {
+      width: 720px;
+      margin-top: 8px;
+      border: 1px dashed #252525;
+      border-radius: 8px;
+      padding: 8px 16px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      min-height: 40px;
+      cursor: pointer;
+      transition: border-color 0.2s, background 0.2s;
+      user-select: none;
+    }
+    .backlog-strip:hover {
+      border-color: #333;
+      background: rgba(255,255,255,0.02);
+    }
+    .backlog-strip.drag-hover {
+      border-color: #6c63ff;
+      background: rgba(108, 99, 255, 0.06);
+    }
+    .backlog-label {
+      font-size: 10px;
+      font-weight: 600;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color: #333;
+    }
+    .backlog-count {
+      font-size: 10px;
+      color: #444;
+      background: #1a1a1a;
+      padding: 2px 8px;
+      border-radius: 10px;
+    }
+    .backlog-dots {
+      display: none;
+      flex-wrap: wrap;
+      gap: 8px;
+      padding: 4px 0;
+    }
+    .backlog-strip.expanded .backlog-dots {
+      display: flex;
+    }
+    .backlog-dot {
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+      cursor: pointer;
+      transition: transform 0.15s, box-shadow 0.15s;
+      animation: backlog-glow 2s ease-in-out infinite;
+    }
+    .backlog-dot:hover {
+      transform: scale(1.5);
+    }
+    @keyframes backlog-glow {
+      0%, 100% { box-shadow: 0 0 4px rgba(108, 99, 255, 0.3); }
+      50% { box-shadow: 0 0 12px rgba(108, 99, 255, 0.6); }
+    }
+
+    /* Legend */
+    .legend {
+      display: flex;
+      gap: 20px;
+      margin-top: 16px;
+      justify-content: center;
+    }
+    .legend-item {
+      display: flex; align-items: center; gap: 6px;
+      font-size: 10px; color: #444;
+      letter-spacing: 1px; text-transform: uppercase;
+    }
+    .legend-dot { width: 8px; height: 8px; border-radius: 50%; }
+
+    /* ========== GOALS SECTION ========== */
+    .goals-section {
+      width: 720px;
+      margin-top: 20px;
+      padding-top: 16px;
+      border-top: 1px solid #1a1a1a;
+    }
+    .goals-header {
+      font-size: 10px;
+      font-weight: 600;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color: #333;
+      margin-bottom: 10px;
+    }
+    .goals-list {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      margin-bottom: 10px;
+    }
+    .goal-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 8px 12px;
+      border: 1px solid #1a1a1a;
+      border-radius: 6px;
+      transition: border-color 0.15s;
+    }
+    .goal-item:hover { border-color: #2a2a2a; }
+    .goal-dot {
+      width: 6px; height: 6px;
+      border-radius: 50%;
+      background: #6c63ff;
+      flex-shrink: 0;
+    }
+    .goal-text {
+      flex: 1;
+      font-size: 13px;
+      color: #888;
+    }
+    .goal-count {
+      font-size: 10px;
+      color: #444;
+      background: #141414;
+      padding: 2px 8px;
+      border-radius: 10px;
+    }
+    .goal-remove {
+      background: none;
+      border: none;
+      color: #333;
+      font-size: 14px;
+      cursor: pointer;
+      padding: 0 4px;
+      transition: color 0.15s;
+    }
+    .goal-remove:hover { color: #e74c3c; }
+    .goal-add-bar {
+      display: flex;
+      gap: 8px;
+    }
+    .goal-add-bar input {
+      flex: 1;
+      background: transparent;
+      border: none;
+      border-bottom: 1px solid #1a1a1a;
+      padding: 8px 4px;
+      color: #888;
+      font-size: 12px;
+      outline: none;
+    }
+    .goal-add-bar input:focus { border-color: #333; }
+    .goal-add-bar input::placeholder { color: #222; }
+    .goal-add-bar button {
+      background: none;
+      border: 1px solid #222;
+      color: #444;
+      padding: 6px 14px;
+      border-radius: 4px;
+      font-size: 11px;
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+    .goal-add-bar button:hover { border-color: #444; color: #aaa; }
+
+    /* ========== PROGRESS CHART ========== */
+    .progress-section {
+      width: 720px;
+      margin-top: 20px;
+      padding-top: 16px;
+      border-top: 1px solid #1a1a1a;
+    }
+    .progress-header {
+      font-size: 10px;
+      font-weight: 600;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color: #333;
+      margin-bottom: 12px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .progress-total {
+      font-weight: 400;
+      color: #555;
+      letter-spacing: 0;
+      text-transform: none;
+      font-size: 11px;
+    }
+    .progress-canvas {
+      width: 100%;
+      height: 180px;
+      display: block;
+    }
+
+    /* Time spent badge in popup */
+    .dot-popup .dp-time {
+      font-size: 10px;
+      color: #555;
+      margin-bottom: 12px;
+      letter-spacing: 0.5px;
+    }
+
+    /* Add task bar */
+    .add-bar {
+      display: flex; gap: 8px; margin-top: 12px; width: 720px;
+    }
+    .add-bar input {
+      flex: 1; background: transparent;
+      border: none; border-bottom: 1px solid #1a1a1a;
+      padding: 10px 4px; color: #888; font-size: 13px; outline: none;
+    }
+    .add-bar input:focus { border-color: #333; }
+    .add-bar input::placeholder { color: #222; }
+    .add-bar select {
+      background: #111; border: 1px solid #222; color: #666;
+      padding: 6px 10px; border-radius: 4px; font-size: 11px; outline: none; cursor: pointer;
+    }
+    .add-bar button {
+      background: none; border: 1px solid #222; color: #444;
+      padding: 6px 14px; border-radius: 4px; font-size: 12px;
+      cursor: pointer; transition: all 0.15s;
+    }
+    .add-bar button:hover { border-color: #444; color: #aaa; }
   </style>
 </head>
 <body>
@@ -274,102 +630,172 @@
     <h1>Eisenhower Matrix</h1>
     <div class="date" id="today-date"></div>
   </header>
-
-  <div class="axis-label-top">
-    <span>Urgent</span>
-    <span>Not Urgent</span>
+  <div class="motivation-banner">
+    Paying the bills &middot; Staying in the country &middot; Learning new things
   </div>
 
-  <div class="matrix">
-    <div class="quadrant q1" id="q1" data-quadrant="q1">
-      <div class="quadrant-header">
-        <div class="quadrant-dot"></div>
-        <h2>Do First</h2>
-        <span class="subtitle">Urgent + Important</span>
-      </div>
-      <div class="task-list" id="list-q1"></div>
-      <div class="add-task-row">
-        <input class="add-task-input" placeholder="Add task..." data-quadrant="q1">
-        <button class="add-task-submit" data-quadrant="q1">+</button>
-      </div>
-    </div>
-
-    <div class="quadrant q2" id="q2" data-quadrant="q2">
-      <div class="quadrant-header">
-        <div class="quadrant-dot"></div>
-        <h2>Schedule</h2>
-        <span class="subtitle">Not Urgent + Important</span>
-      </div>
-      <div class="task-list" id="list-q2"></div>
-      <div class="add-task-row">
-        <input class="add-task-input" placeholder="Add task..." data-quadrant="q2">
-        <button class="add-task-submit" data-quadrant="q2">+</button>
-      </div>
-    </div>
-
-    <div class="quadrant q3" id="q3" data-quadrant="q3">
-      <div class="quadrant-header">
-        <div class="quadrant-dot"></div>
-        <h2>Delegate</h2>
-        <span class="subtitle">Urgent + Not Important</span>
-      </div>
-      <div class="task-list" id="list-q3"></div>
-      <div class="add-task-row">
-        <input class="add-task-input" placeholder="Add task..." data-quadrant="q3">
-        <button class="add-task-submit" data-quadrant="q3">+</button>
-      </div>
-    </div>
-
-    <div class="quadrant q4" id="q4" data-quadrant="q4">
-      <div class="quadrant-header">
-        <div class="quadrant-dot"></div>
-        <h2>Eliminate</h2>
-        <span class="subtitle">Not Urgent + Not Important</span>
-      </div>
-      <div class="task-list" id="list-q4"></div>
-      <div class="add-task-row">
-        <input class="add-task-input" placeholder="Add task..." data-quadrant="q4">
-        <button class="add-task-submit" data-quadrant="q4">+</button>
-      </div>
+  <!-- Fullscreen timer overlay -->
+  <div class="timer-overlay" id="timer-overlay">
+    <div class="to-task" id="to-task"></div>
+    <div class="to-goal" id="to-goal"></div>
+    <div class="to-time" id="to-time">45:00</div>
+    <div class="to-progress"><div class="to-progress-fill" id="to-progress-fill"></div></div>
+    <div class="to-buttons">
+      <button class="to-pause" id="to-pause">Pause</button>
+      <button class="to-done" id="to-done">Done</button>
+      <button class="to-cancel" id="to-cancel">Cancel</button>
     </div>
   </div>
 
-  <!-- Timer Overlay -->
-  <div id="timer-overlay">
-    <div id="timer-task-name"></div>
-    <div id="timer-display">45:00</div>
-    <div id="timer-progress"><div id="timer-progress-bar"></div></div>
-    <div class="timer-buttons">
-      <button class="timer-btn pause" id="timer-pause">Pause</button>
-      <button class="timer-btn done" id="timer-done">Mark Done</button>
-      <button class="timer-btn stop" id="timer-stop">Cancel</button>
+  <div class="graph-wrapper">
+    <div class="graph" id="graph">
+      <div class="quadrant-bg qbg-green"></div>
+      <div class="quadrant-bg qbg-yellow"></div>
+      <div class="quadrant-bg qbg-red"></div>
+      <div class="quadrant-bg qbg-blue"></div>
+      <div class="grid-mid-x"></div>
+      <div class="grid-mid-y"></div>
+      <span class="quadrant-label ql-green">Do First</span>
+      <span class="quadrant-label ql-yellow">Schedule</span>
+      <span class="quadrant-label ql-red">Park</span>
+      <span class="quadrant-label ql-blue">Batch</span>
     </div>
+  </div>
+
+  <!-- Backlog strip -->
+  <div class="backlog-strip" id="backlog-strip">
+    <span class="backlog-label">Backlog</span>
+    <span class="backlog-count" id="backlog-count">0</span>
+    <div class="backlog-dots" id="backlog-dots"></div>
+  </div>
+
+  <div class="tooltip" id="tooltip">
+    <div class="tooltip-title" id="tooltip-title"></div>
+    <div class="tooltip-meta" id="tooltip-meta"></div>
+  </div>
+
+  <!-- Expanded dot popup (click a dot) -->
+  <div class="dot-popup" id="dot-popup">
+    <div class="dp-title" id="dp-title"></div>
+    <div class="dp-tag" id="dp-tag"></div>
+    <div class="dp-time" id="dp-time"></div>
+    <div class="dp-goal-section">
+      <div class="dp-goal-label">Aligns with goal</div>
+      <select class="dp-goal-select" id="dp-goal-select">
+        <option value="">None</option>
+      </select>
+    </div>
+    <div class="dp-actions">
+      <button class="dp-start" id="dp-start">Start Timer</button>
+      <div class="dp-row">
+        <button class="dp-complete" id="dp-complete">Complete</button>
+        <button class="dp-delete" id="dp-delete">Delete</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Add dot popup (click on empty graph area) -->
+  <div class="add-dot-popup" id="add-dot-popup">
+    <input id="add-dot-input" placeholder="Task name..." autocomplete="off">
+  </div>
+
+  <div class="context-menu" id="context-menu">
+    <button id="ctx-timer">Start 45m Timer</button>
+    <button id="ctx-complete">Mark Complete</button>
+    <div class="divider"></div>
+    <button id="ctx-move-green">Move to Do First</button>
+    <button id="ctx-move-yellow">Move to Schedule</button>
+    <button id="ctx-move-blue">Move to Batch</button>
+    <button id="ctx-move-red">Move to Park</button>
+    <button id="ctx-backlog">Send to Backlog</button>
+    <div class="divider"></div>
+    <button id="ctx-delete" style="color:#e74c3c">Delete</button>
+  </div>
+
+  <div class="legend">
+    <div class="legend-item"><div class="legend-dot" style="background:#2ecc71"></div> Do First</div>
+    <div class="legend-item"><div class="legend-dot" style="background:#f1c40f"></div> Schedule</div>
+    <div class="legend-item"><div class="legend-dot" style="background:#3498db"></div> Batch</div>
+    <div class="legend-item"><div class="legend-dot" style="background:#e74c3c"></div> Park</div>
+  </div>
+
+  <div class="add-bar">
+    <input id="add-input" placeholder="Add task...">
+    <select id="add-quadrant">
+      <option value="green">Do First</option>
+      <option value="yellow">Schedule</option>
+      <option value="blue">Batch</option>
+      <option value="red">Park</option>
+    </select>
+    <select id="add-tag">
+      <option value="work">Work</option>
+      <option value="personal">Personal</option>
+    </select>
+    <button id="add-btn">Add</button>
+  </div>
+
+  <!-- Goals section -->
+  <div class="goals-section">
+    <div class="goals-header">Goals</div>
+    <div class="goals-list" id="goals-list"></div>
+    <div class="goal-add-bar">
+      <input id="goal-input" placeholder="Add a goal...">
+      <button id="goal-add-btn">Add</button>
+    </div>
+  </div>
+
+  <!-- Progress chart -->
+  <div class="progress-section">
+    <div class="progress-header">
+      <span>Daily Progress</span>
+      <span class="progress-total" id="progress-total"></span>
+    </div>
+    <canvas class="progress-canvas" id="progress-canvas" width="720" height="180"></canvas>
   </div>
 
   <script>
-    // --- Data ---
-    const STORAGE_KEY = 'eisenhower-matrix-tasks';
+    const STORAGE_KEY = 'eisenhower-graph-v5';
+    const GOALS_KEY = 'eisenhower-goals-v1';
+    const HISTORY_KEY = 'eisenhower-history-v1';
+
+    const QUAD_BOUNDS = {
+      green:  { xMin: 55, xMax: 94, yMin: 6,  yMax: 44 },
+      yellow: { xMin: 6,  xMax: 44, yMin: 6,  yMax: 44 },
+      red:    { xMin: 6,  xMax: 44, yMin: 56, yMax: 94 },
+      blue:   { xMin: 55, xMax: 94, yMin: 56, yMax: 94 },
+    };
+
+    function rand(min, max) { return min + Math.random() * (max - min); }
+    function posFor(q) {
+      const b = QUAD_BOUNDS[q];
+      return { x: rand(b.xMin, b.xMax), y: rand(b.yMin, b.yMax) };
+    }
+
+    const defaultGoals = [
+      { id: crypto.randomUUID(), text: 'Getting a job at Anthropic' },
+      { id: crypto.randomUUID(), text: 'Keeping my current job at Meta' },
+      { id: crypto.randomUUID(), text: 'Learning about agents' },
+    ];
 
     const defaultTasks = [
-      // Work -> q1 (urgent + important)
-      { id: crypto.randomUUID(), text: 'Align on Alex diff', tag: 'work', quadrant: 'q1', completed: false },
-      { id: crypto.randomUUID(), text: "Respond to Heikki's comment on API diff", tag: 'work', quadrant: 'q1', completed: false },
-      { id: crypto.randomUUID(), text: 'Article on latency reduction (O-1)', tag: 'work', quadrant: 'q1', completed: false },
-      { id: crypto.randomUUID(), text: 'Settings data movement reduction (latency)', tag: 'work', quadrant: 'q1', completed: false },
-      // Non-work -> q4 (not urgent + not important) by default
-      { id: crypto.randomUUID(), text: 'Cursor one-pager', tag: 'personal', quadrant: 'q4', completed: false },
-      { id: crypto.randomUUID(), text: 'Cursor outreach', tag: 'personal', quadrant: 'q4', completed: false },
-      { id: crypto.randomUUID(), text: 'OpenAI one-pager', tag: 'personal', quadrant: 'q4', completed: false },
-      { id: crypto.randomUUID(), text: 'OpenAI outreach', tag: 'personal', quadrant: 'q4', completed: false },
-      { id: crypto.randomUUID(), text: 'Write Nikunj article (Claude Code)', tag: 'personal', quadrant: 'q4', completed: false },
-      { id: crypto.randomUUID(), text: 'Claude Code post', tag: 'personal', quadrant: 'q4', completed: false },
-      { id: crypto.randomUUID(), text: 'Build RL environments', tag: 'personal', quadrant: 'q4', completed: false },
-      { id: crypto.randomUUID(), text: 'Columbia in Tech event', tag: 'personal', quadrant: 'q4', completed: false },
-      { id: crypto.randomUUID(), text: 'File taxes', tag: 'personal', quadrant: 'q4', completed: false },
-      { id: crypto.randomUUID(), text: 'Study web crawler', tag: 'personal', quadrant: 'q4', completed: false },
+      { id: crypto.randomUUID(), text: 'Align on Alex diff', tag: 'work', quadrant: 'green', completed: false, goalId: '', ...posFor('green') },
+      { id: crypto.randomUUID(), text: "Respond to Heikki's API comment", tag: 'work', quadrant: 'green', completed: false, goalId: '', ...posFor('green') },
+      { id: crypto.randomUUID(), text: 'Latency reduction article (O-1)', tag: 'work', quadrant: 'green', completed: false, goalId: '', ...posFor('green') },
+      { id: crypto.randomUUID(), text: 'Settings data movement', tag: 'work', quadrant: 'green', completed: false, goalId: '', ...posFor('green') },
+      { id: crypto.randomUUID(), text: 'Ship FXCAL MCP', tag: 'work', quadrant: 'green', completed: false, goalId: '', ...posFor('green') },
+      { id: crypto.randomUUID(), text: 'Start YouTube channel', tag: 'personal', quadrant: 'yellow', completed: false, goalId: '', ...posFor('yellow') },
+      { id: crypto.randomUUID(), text: 'Build RL environments', tag: 'personal', quadrant: 'yellow', completed: false, goalId: '', ...posFor('yellow') },
+      { id: crypto.randomUUID(), text: 'Columbia in Tech event', tag: 'personal', quadrant: 'yellow', completed: false, goalId: '', ...posFor('yellow') },
+      { id: crypto.randomUUID(), text: 'Study web crawler', tag: 'personal', quadrant: 'yellow', completed: false, goalId: '', ...posFor('yellow') },
+      { id: crypto.randomUUID(), text: 'Cursor one-pager', tag: 'personal', quadrant: 'red', completed: false, goalId: '', ...posFor('red') },
+      { id: crypto.randomUUID(), text: 'OpenAI one-pager', tag: 'personal', quadrant: 'red', completed: false, goalId: '', ...posFor('red') },
+      { id: crypto.randomUUID(), text: 'Normies Love Claude Code', tag: 'personal', quadrant: 'red', completed: false, goalId: '', ...posFor('red') },
+      { id: crypto.randomUUID(), text: 'Claude Code post', tag: 'personal', quadrant: 'red', completed: false, goalId: '', ...posFor('red') },
+      { id: crypto.randomUUID(), text: 'File taxes', tag: 'personal', quadrant: 'red', completed: false, goalId: '', ...posFor('red') },
     ];
 
     let tasks = loadTasks();
+    let goals = loadGoals();
 
     function loadTasks() {
       const saved = localStorage.getItem(STORAGE_KEY);
@@ -378,153 +804,651 @@
     function saveTasks() {
       localStorage.setItem(STORAGE_KEY, JSON.stringify(tasks));
     }
+    function loadGoals() {
+      const saved = localStorage.getItem(GOALS_KEY);
+      return saved ? JSON.parse(saved) : defaultGoals;
+    }
+    function saveGoals() {
+      localStorage.setItem(GOALS_KEY, JSON.stringify(goals));
+    }
 
-    // --- Date ---
-    const dateEl = document.getElementById('today-date');
-    const now = new Date();
-    dateEl.textContent = now.toLocaleDateString('en-US', {
+    document.getElementById('today-date').textContent = new Date().toLocaleDateString('en-US', {
       weekday: 'long', year: 'numeric', month: 'long', day: 'numeric'
     });
 
+    // --- Elements ---
+    const graph = document.getElementById('graph');
+    const tooltip = document.getElementById('tooltip');
+    const tooltipTitle = document.getElementById('tooltip-title');
+    const tooltipMeta = document.getElementById('tooltip-meta');
+    const contextMenu = document.getElementById('context-menu');
+    const backlogStrip = document.getElementById('backlog-strip');
+    const backlogCount = document.getElementById('backlog-count');
+    const backlogDotsEl = document.getElementById('backlog-dots');
+    const dotPopup = document.getElementById('dot-popup');
+    const dpTitle = document.getElementById('dp-title');
+    const dpTag = document.getElementById('dp-tag');
+    const dpGoalSelect = document.getElementById('dp-goal-select');
+    const dpStart = document.getElementById('dp-start');
+    let popupTaskId = null;
+    let expandedGroupEl = null;
+    let contextTaskId = null;
+    let dragTaskId = null;
+    let isDragging = false;
+
+    const DOT_CLASS = { green: 'dot-green', yellow: 'dot-yellow', red: 'dot-red', blue: 'dot-blue' };
+    const DOT_COLORS = { green: '#2ecc71', yellow: '#f1c40f', red: '#e74c3c', blue: '#3498db' };
+
     // --- Render ---
     function render() {
-      ['q1','q2','q3','q4'].forEach(q => {
-        const list = document.getElementById('list-' + q);
-        list.innerHTML = '';
-        tasks.filter(t => t.quadrant === q).forEach(t => {
-          const el = document.createElement('div');
-          el.className = 'task' + (t.completed ? ' completed' : '');
-          el.draggable = true;
-          el.dataset.id = t.id;
+      graph.querySelectorAll('.dot-group, .completion-trail').forEach(el => el.remove());
 
-          el.innerHTML = `
-            <div class="task-checkbox" data-id="${t.id}"></div>
-            <span class="task-text">${escapeHtml(t.text)}</span>
-            <span class="task-tag tag-${t.tag}">${t.tag}</span>
-            <button class="task-timer-btn" data-id="${t.id}">45m</button>
-          `;
+      const graphTasks = tasks.filter(t => t.quadrant !== 'backlog');
+      const backlogTasks = tasks.filter(t => t.quadrant === 'backlog');
 
-          // Drag events
-          el.addEventListener('dragstart', e => {
-            el.classList.add('dragging');
-            e.dataTransfer.setData('text/plain', t.id);
-            e.dataTransfer.effectAllowed = 'move';
-          });
-          el.addEventListener('dragend', () => el.classList.remove('dragging'));
+      graphTasks.forEach(t => {
+        // Trail for timer-active task
+        if (t.id === timerTaskId && timerRunning && t.timerStartY != null) {
+          const trail = document.createElement('div');
+          trail.className = 'completion-trail';
+          const startBottom = 100 - t.timerStartY;
+          const curBottom = 100 - t.y;
+          const trailBottom = Math.min(startBottom, curBottom);
+          const trailHeight = Math.abs(curBottom - startBottom);
+          trail.style.left = t.x + '%';
+          trail.style.bottom = trailBottom + '%';
+          trail.style.height = trailHeight + '%';
+          trail.style.transform = 'translateX(-50%)';
+          graph.appendChild(trail);
+        }
 
-          list.appendChild(el);
+        const group = document.createElement('div');
+        group.className = 'dot-group'
+          + (t.completed ? ' completed' : '')
+          + (t.id === timerTaskId && timerRunning ? ' timer-active' : '')
+          + (t.id === popupTaskId ? ' expanded' : '');
+        group.style.left = t.x + '%';
+        group.style.bottom = (100 - t.y) + '%';
+        group.dataset.id = t.id;
+
+        const dot = document.createElement('div');
+        dot.className = 'dot ' + DOT_CLASS[t.quadrant];
+        group.appendChild(dot);
+
+        // --- Hover: tooltip ---
+        group.addEventListener('mouseenter', e => {
+          if (isDragging || popupTaskId) return;
+          tooltipTitle.textContent = t.text;
+          const goalText = t.goalId ? (goals.find(g => g.id === t.goalId)?.text || '') : '';
+          const timeStr = (t.timeSpent || 0) > 0 ? ' \u2022 ' + formatTimeSpent(t.timeSpent) : '';
+          tooltipMeta.textContent = t.tag
+            + (goalText ? ' \u2022 ' + goalText : '')
+            + timeStr
+            + (t.completed ? ' \u2022 done' : '')
+            + (t.id === timerTaskId && timerRunning ? ' \u2022 timer running' : '');
+          tooltip.classList.add('visible');
+          posTooltip(e);
         });
-      });
-    }
+        group.addEventListener('mousemove', posTooltip);
+        group.addEventListener('mouseleave', () => tooltip.classList.remove('visible'));
 
-    function escapeHtml(str) {
-      const div = document.createElement('div');
-      div.textContent = str;
-      return div.innerHTML;
-    }
+        // --- Click: expand dot + show popup ---
+        group.addEventListener('click', e => {
+          if (isDragging) return;
+          e.stopPropagation();
+          if (timerRunning) return;
 
-    // --- Drag & Drop on quadrants ---
-    document.querySelectorAll('.quadrant').forEach(quad => {
-      quad.addEventListener('dragover', e => {
-        e.preventDefault();
-        e.dataTransfer.dropEffect = 'move';
-        quad.classList.add('drag-over');
-      });
-      quad.addEventListener('dragleave', () => quad.classList.remove('drag-over'));
-      quad.addEventListener('drop', e => {
-        e.preventDefault();
-        quad.classList.remove('drag-over');
-        const taskId = e.dataTransfer.getData('text/plain');
-        const task = tasks.find(t => t.id === taskId);
-        if (task) {
-          task.quadrant = quad.dataset.quadrant;
+          // If already expanded, collapse
+          if (popupTaskId === t.id) {
+            closeDotPopup();
+            return;
+          }
+
+          // Expand this dot
+          popupTaskId = t.id;
+          expandedGroupEl = group;
+          group.classList.add('expanded');
+
+          dpTitle.textContent = t.text;
+          dpTag.textContent = t.tag;
+          document.getElementById('dp-time').textContent = formatTimeSpent(t.timeSpent || 0);
+          dpComplete.textContent = t.completed ? 'Uncomplete' : 'Complete';
+          populateGoalSelect(t.goalId || '');
+
+          // Position popup near the dot
+          const rect = group.getBoundingClientRect();
+          dotPopup.style.left = (rect.left + rect.width / 2 - 130) + 'px';
+          dotPopup.style.top = (rect.bottom + 12) + 'px';
+          dotPopup.classList.add('visible');
+          tooltip.classList.remove('visible');
+
+          render(); // re-render to apply expanded class
+        });
+
+        // --- Double click: toggle complete ---
+        group.addEventListener('dblclick', e => {
+          e.stopPropagation();
+          e.preventDefault();
+          t.completed = !t.completed;
+          if (t.completed) recordCompletion();
           saveTasks();
-          render();
-        }
+          render(); renderProgress();
+        });
+
+        // --- Right click: context menu ---
+        group.addEventListener('contextmenu', e => {
+          e.preventDefault();
+          e.stopPropagation();
+          contextTaskId = t.id;
+          closeDotPopup();
+          document.getElementById('ctx-complete').textContent = t.completed ? 'Mark Incomplete' : 'Mark Complete';
+          contextMenu.style.left = e.clientX + 'px';
+          contextMenu.style.top = e.clientY + 'px';
+          contextMenu.classList.add('visible');
+        });
+
+        // --- Drag ---
+        group.addEventListener('mousedown', e => {
+          if (e.button !== 0) return;
+          e.preventDefault();
+          dragTaskId = t.id;
+          isDragging = false;
+        });
+
+        graph.appendChild(group);
       });
+
+      // Update backlog
+      renderBacklog(backlogTasks);
+    }
+
+    function populateGoalSelect(selectedGoalId) {
+      dpGoalSelect.innerHTML = '<option value="">None</option>';
+      goals.forEach(g => {
+        const opt = document.createElement('option');
+        opt.value = g.id;
+        opt.textContent = g.text;
+        if (g.id === selectedGoalId) opt.selected = true;
+        dpGoalSelect.appendChild(opt);
+      });
+    }
+
+    function closeDotPopup() {
+      if (expandedGroupEl) expandedGroupEl.classList.remove('expanded');
+      popupTaskId = null;
+      expandedGroupEl = null;
+      dotPopup.classList.remove('visible');
+    }
+
+    // Save goal selection when changed
+    dpGoalSelect.addEventListener('change', () => {
+      if (!popupTaskId) return;
+      const task = tasks.find(t => t.id === popupTaskId);
+      if (task) {
+        task.goalId = dpGoalSelect.value;
+        saveTasks();
+        renderGoals();
+      }
     });
 
-    // --- Click handlers (checkbox + timer) ---
+    // Start timer from popup
+    dpStart.addEventListener('click', e => {
+      e.stopPropagation();
+      const task = tasks.find(t => t.id === popupTaskId);
+      closeDotPopup();
+      if (task && !timerRunning) startTimer(task);
+    });
+
+    // Complete from popup
+    const dpComplete = document.getElementById('dp-complete');
+    dpComplete.addEventListener('click', e => {
+      e.stopPropagation();
+      const task = tasks.find(t => t.id === popupTaskId);
+      if (task) {
+        task.completed = !task.completed;
+        if (task.completed) recordCompletion();
+        saveTasks();
+      }
+      closeDotPopup();
+      render(); renderGoals(); renderProgress();
+    });
+
+    // Delete from popup
+    const dpDelete = document.getElementById('dp-delete');
+    dpDelete.addEventListener('click', e => {
+      e.stopPropagation();
+      tasks = tasks.filter(t => t.id !== popupTaskId);
+      saveTasks();
+      closeDotPopup();
+      render(); renderGoals(); renderProgress();
+    });
+
+    // Dismiss popups on click elsewhere
     document.addEventListener('click', e => {
-      const checkbox = e.target.closest('.task-checkbox');
-      if (checkbox) {
-        const task = tasks.find(t => t.id === checkbox.dataset.id);
-        if (task) {
-          task.completed = !task.completed;
-          saveTasks();
-          render();
-        }
-        return;
+      if (!e.target.closest('.dot-popup') && !e.target.closest('.dot-group')) {
+        closeDotPopup();
+        render();
       }
-      const timerBtn = e.target.closest('.task-timer-btn');
-      if (timerBtn) {
-        const task = tasks.find(t => t.id === timerBtn.dataset.id);
-        if (task) startTimer(task);
+      if (!e.target.closest('.add-dot-popup') && !e.target.closest('.graph')) {
+        closeAddDotPopup();
       }
+      contextMenu.classList.remove('visible');
     });
 
-    // --- Add task ---
-    document.querySelectorAll('.add-task-submit').forEach(btn => {
-      btn.addEventListener('click', () => {
-        const q = btn.dataset.quadrant;
-        const input = btn.previousElementSibling;
-        const text = input.value.trim();
+    // --- Click on empty graph area → add a dot ---
+    const addDotPopup = document.getElementById('add-dot-popup');
+    const addDotInput = document.getElementById('add-dot-input');
+    let addDotX = 0, addDotY = 0;
+
+    graph.addEventListener('click', e => {
+      // Don't trigger if clicking a dot or if dragging
+      if (e.target.closest('.dot-group') || isDragging) return;
+      if (timerRunning) return;
+
+      // Close other popups
+      closeDotPopup();
+
+      const rect = graph.getBoundingClientRect();
+      addDotX = ((e.clientX - rect.left) / rect.width) * 100;
+      addDotY = ((e.clientY - rect.top) / rect.height) * 100;
+      addDotX = Math.max(3, Math.min(97, addDotX));
+      addDotY = Math.max(3, Math.min(97, addDotY));
+
+      addDotPopup.style.left = (e.clientX - 120) + 'px';
+      addDotPopup.style.top = (e.clientY + 12) + 'px';
+      addDotPopup.classList.add('visible');
+      addDotInput.value = '';
+      addDotInput.focus();
+    });
+
+    addDotInput.addEventListener('keydown', e => {
+      if (e.key === 'Enter') {
+        const text = addDotInput.value.trim();
         if (!text) return;
+        const q = quadrantFromPos(addDotX, addDotY);
         tasks.push({
           id: crypto.randomUUID(),
           text,
-          tag: 'personal',
+          tag: 'work',
           quadrant: q,
-          completed: false
+          completed: false,
+          goalId: '',
+          x: addDotX,
+          y: addDotY,
         });
-        input.value = '';
         saveTasks();
+        closeAddDotPopup();
         render();
-      });
+        renderGoals();
+      }
+      if (e.key === 'Escape') {
+        closeAddDotPopup();
+      }
     });
-    document.querySelectorAll('.add-task-input').forEach(input => {
-      input.addEventListener('keydown', e => {
-        if (e.key === 'Enter') {
-          input.nextElementSibling.click();
+
+    function closeAddDotPopup() {
+      addDotPopup.classList.remove('visible');
+    }
+
+    let backlogDragTaskId = null;
+    let backlogDragGhost = null;
+    let backlogDragStarted = false;
+
+    function renderBacklog(backlogTasks) {
+      backlogCount.textContent = backlogTasks.length;
+      backlogDotsEl.innerHTML = '';
+
+      backlogTasks.forEach(t => {
+        const dot = document.createElement('div');
+        dot.className = 'backlog-dot';
+        const origColor = DOT_COLORS[t.backlogOrigQuadrant] || '#6c63ff';
+        dot.style.background = origColor;
+
+        dot.addEventListener('mouseenter', e => {
+          if (backlogDragStarted) return;
+          tooltipTitle.textContent = t.text;
+          tooltipMeta.textContent = t.tag + ' \u2022 backlog';
+          tooltip.classList.add('visible');
+          posTooltip(e);
+        });
+        dot.addEventListener('mousemove', posTooltip);
+        dot.addEventListener('mouseleave', () => tooltip.classList.remove('visible'));
+
+        dot.addEventListener('contextmenu', e => {
+          e.preventDefault();
+          e.stopPropagation();
+          contextTaskId = t.id;
+          document.getElementById('ctx-complete').textContent = t.completed ? 'Mark Incomplete' : 'Mark Complete';
+          contextMenu.style.left = e.clientX + 'px';
+          contextMenu.style.top = e.clientY + 'px';
+          contextMenu.classList.add('visible');
+        });
+
+        // Drag from backlog back into graph
+        dot.addEventListener('mousedown', e => {
+          if (e.button !== 0) return;
+          e.preventDefault();
+          e.stopPropagation();
+          backlogDragTaskId = t.id;
+          backlogDragStarted = false;
+        });
+
+        backlogDotsEl.appendChild(dot);
+      });
+    }
+
+    // Backlog drag: mousemove
+    document.addEventListener('mousemove', e => {
+      if (!backlogDragTaskId) return;
+      backlogDragStarted = true;
+      tooltip.classList.remove('visible');
+
+      if (!backlogDragGhost) {
+        const task = tasks.find(t => t.id === backlogDragTaskId);
+        const color = DOT_COLORS[task?.backlogOrigQuadrant] || '#6c63ff';
+        backlogDragGhost = document.createElement('div');
+        backlogDragGhost.style.cssText = 'position:fixed;width:14px;height:14px;border-radius:50%;z-index:500;pointer-events:none;transition:none;';
+        backlogDragGhost.style.background = color;
+        backlogDragGhost.style.boxShadow = '0 0 16px ' + color;
+        document.body.appendChild(backlogDragGhost);
+      }
+      backlogDragGhost.style.left = (e.clientX - 7) + 'px';
+      backlogDragGhost.style.top = (e.clientY - 7) + 'px';
+    });
+
+    // Backlog drag: mouseup — drop into graph
+    document.addEventListener('mouseup', e => {
+      if (!backlogDragTaskId) return;
+
+      if (backlogDragGhost) {
+        backlogDragGhost.remove();
+        backlogDragGhost = null;
+      }
+
+      if (backlogDragStarted) {
+        const task = tasks.find(t => t.id === backlogDragTaskId);
+        if (task) {
+          const rect = graph.getBoundingClientRect();
+          let px = ((e.clientX - rect.left) / rect.width) * 100;
+          let py = ((e.clientY - rect.top) / rect.height) * 100;
+
+          // If dropped inside the graph, restore from backlog
+          if (px >= 0 && px <= 100 && py >= 0 && py <= 100) {
+            px = Math.max(3, Math.min(97, px));
+            py = Math.max(3, Math.min(97, py));
+            task.x = px;
+            task.y = py;
+            task.quadrant = quadrantFromPos(px, py);
+            delete task.backlogOrigQuadrant;
+          }
+          // Otherwise stays in backlog
+          saveTasks();
+        }
+      }
+
+      backlogDragTaskId = null;
+      backlogDragStarted = false;
+      render();
+    });
+
+    function posTooltip(e) {
+      tooltip.style.left = (e.clientX + 16) + 'px';
+      tooltip.style.top = (e.clientY - 8) + 'px';
+    }
+
+    // --- Backlog strip: double-click to toggle expand ---
+    backlogStrip.addEventListener('dblclick', e => {
+      e.preventDefault();
+      backlogStrip.classList.toggle('expanded');
+    });
+
+    // --- Drag ---
+    // When dragging outside the grid, we use a floating ghost dot that follows the cursor
+    let dragGhost = null;
+
+    document.addEventListener('mousemove', e => {
+      if (!dragTaskId) return;
+      isDragging = true;
+      tooltip.classList.remove('visible');
+      closeDotPopup();
+      const task = tasks.find(t => t.id === dragTaskId);
+      if (!task) return;
+      const rect = graph.getBoundingClientRect();
+      let px = ((e.clientX - rect.left) / rect.width) * 100;
+      let py = ((e.clientY - rect.top) / rect.height) * 100;
+
+      const outsideGrid = px < 0 || px > 100 || py < 0 || py > 100;
+
+      if (py > 100) {
+        backlogStrip.classList.add('drag-hover');
+      } else {
+        backlogStrip.classList.remove('drag-hover');
+      }
+
+      if (outsideGrid) {
+        // Hide the dot inside the grid by moving it to edge
+        task.x = Math.max(3, Math.min(97, px));
+        task.y = Math.max(3, Math.min(97, py));
+        task.quadrant = quadrantFromPos(task.x, task.y);
+
+        // Show a ghost dot following cursor
+        if (!dragGhost) {
+          dragGhost = document.createElement('div');
+          dragGhost.style.cssText = 'position:fixed;width:14px;height:14px;border-radius:50%;z-index:500;pointer-events:none;opacity:0.7;transition:none;';
+          dragGhost.style.background = DOT_COLORS[task.quadrant] || '#6c63ff';
+          dragGhost.style.boxShadow = '0 0 16px ' + (DOT_COLORS[task.quadrant] || '#6c63ff');
+          document.body.appendChild(dragGhost);
+        }
+        dragGhost.style.left = (e.clientX - 7) + 'px';
+        dragGhost.style.top = (e.clientY - 7) + 'px';
+        dragGhost.style.background = DOT_COLORS[task.quadrant] || '#6c63ff';
+
+        // Hide the in-graph dot
+        const groupEl = graph.querySelector(`.dot-group[data-id="${task.id}"]`);
+        if (groupEl) groupEl.style.opacity = '0.2';
+      } else {
+        // Inside grid — remove ghost, update position normally
+        if (dragGhost) {
+          dragGhost.remove();
+          dragGhost = null;
+        }
+        px = Math.max(3, Math.min(97, px));
+        py = Math.max(3, Math.min(97, py));
+        task.x = px;
+        task.y = py;
+        task.quadrant = quadrantFromPos(px, py);
+      }
+
+      render();
+    });
+
+    document.addEventListener('mouseup', e => {
+      if (dragTaskId) {
+        const task = tasks.find(t => t.id === dragTaskId);
+
+        // Clean up ghost
+        if (dragGhost) {
+          dragGhost.remove();
+          dragGhost = null;
+        }
+
+        if (isDragging && task) {
+          const rect = graph.getBoundingClientRect();
+          const py = ((e.clientY - rect.top) / rect.height) * 100;
+
+          if (py > 100) {
+            task.backlogOrigQuadrant = task.quadrant;
+            task.quadrant = 'backlog';
+          }
+          saveTasks();
+          backlogStrip.classList.remove('drag-hover');
+          dragTaskId = null;
+          setTimeout(() => isDragging = false, 50);
+          render();
+        } else {
+          // Was just a click, not a drag — don't render (let click handler fire)
+          backlogStrip.classList.remove('drag-hover');
+          dragTaskId = null;
+          setTimeout(() => isDragging = false, 50);
+        }
+      }
+    });
+
+    function quadrantFromPos(x, y) {
+      if (x >= 50 && y <= 50) return 'green';
+      if (x < 50 && y <= 50) return 'yellow';
+      if (x < 50 && y > 50) return 'red';
+      return 'blue';
+    }
+
+    // --- Context menu ---
+    document.addEventListener('contextmenu', e => {
+      if (!e.target.closest('.dot-group') && !e.target.closest('.backlog-dot')) contextMenu.classList.remove('visible');
+    });
+
+    document.getElementById('ctx-timer').addEventListener('click', () => {
+      const task = tasks.find(t => t.id === contextTaskId);
+      if (task && !timerRunning) startTimer(task);
+    });
+    document.getElementById('ctx-complete').addEventListener('click', () => {
+      const task = tasks.find(t => t.id === contextTaskId);
+      if (task) {
+        task.completed = !task.completed;
+        if (task.completed) recordCompletion();
+        saveTasks(); render(); renderProgress();
+      }
+    });
+    document.getElementById('ctx-delete').addEventListener('click', () => {
+      tasks = tasks.filter(t => t.id !== contextTaskId);
+      saveTasks(); render(); renderGoals();
+    });
+    document.getElementById('ctx-backlog').addEventListener('click', () => {
+      const task = tasks.find(t => t.id === contextTaskId);
+      if (task) {
+        task.backlogOrigQuadrant = task.quadrant;
+        task.quadrant = 'backlog';
+        saveTasks(); render();
+      }
+    });
+    ['green', 'yellow', 'blue', 'red'].forEach(q => {
+      document.getElementById('ctx-move-' + q).addEventListener('click', () => {
+        const task = tasks.find(t => t.id === contextTaskId);
+        if (task) {
+          const pos = posFor(q);
+          task.x = pos.x; task.y = pos.y; task.quadrant = q;
+          delete task.backlogOrigQuadrant;
+          saveTasks(); render();
         }
       });
     });
 
-    // --- Timer ---
-    const TIMER_DURATION = 45 * 60; // 45 min in seconds
+    // --- Add task ---
+    document.getElementById('add-btn').addEventListener('click', addTask);
+    document.getElementById('add-input').addEventListener('keydown', e => { if (e.key === 'Enter') addTask(); });
+
+    function addTask() {
+      const input = document.getElementById('add-input');
+      const text = input.value.trim();
+      if (!text) return;
+      const q = document.getElementById('add-quadrant').value;
+      const tag = document.getElementById('add-tag').value;
+      const pos = posFor(q);
+      tasks.push({ id: crypto.randomUUID(), text, tag, quadrant: q, completed: false, goalId: '', x: pos.x, y: pos.y });
+      input.value = '';
+      saveTasks(); render(); renderGoals();
+    }
+
+    // ========== GOALS ==========
+    const goalsList = document.getElementById('goals-list');
+
+    function renderGoals() {
+      goalsList.innerHTML = '';
+      goals.forEach(g => {
+        const count = tasks.filter(t => t.goalId === g.id).length;
+        const item = document.createElement('div');
+        item.className = 'goal-item';
+        item.innerHTML = `
+          <div class="goal-dot"></div>
+          <span class="goal-text">${g.text}</span>
+          <span class="goal-count">${count} task${count !== 1 ? 's' : ''}</span>
+        `;
+        const removeBtn = document.createElement('button');
+        removeBtn.className = 'goal-remove';
+        removeBtn.textContent = '\u00d7';
+        removeBtn.addEventListener('click', () => {
+          goals = goals.filter(gl => gl.id !== g.id);
+          // Clear goalId from tasks that had this goal
+          tasks.forEach(t => { if (t.goalId === g.id) t.goalId = ''; });
+          saveGoals(); saveTasks(); renderGoals();
+        });
+        item.appendChild(removeBtn);
+        goalsList.appendChild(item);
+      });
+    }
+
+    document.getElementById('goal-add-btn').addEventListener('click', addGoal);
+    document.getElementById('goal-input').addEventListener('keydown', e => { if (e.key === 'Enter') addGoal(); });
+
+    function addGoal() {
+      const input = document.getElementById('goal-input');
+      const text = input.value.trim();
+      if (!text) return;
+      goals.push({ id: crypto.randomUUID(), text });
+      input.value = '';
+      saveGoals(); renderGoals();
+    }
+
+    // ========== FULLSCREEN TIMER ==========
+    const TIMER_DURATION = 45 * 60;
     let timerInterval = null;
     let timerRemaining = 0;
     let timerPaused = false;
     let timerTaskId = null;
+    let timerRunning = false;
 
-    const overlay = document.getElementById('timer-overlay');
-    const timerDisplay = document.getElementById('timer-display');
-    const timerTaskName = document.getElementById('timer-task-name');
-    const timerProgressBar = document.getElementById('timer-progress-bar');
-    const pauseBtn = document.getElementById('timer-pause');
-    const stopBtn = document.getElementById('timer-stop');
-    const doneBtn = document.getElementById('timer-done');
+    const timerOverlay = document.getElementById('timer-overlay');
+    const toTask = document.getElementById('to-task');
+    const toGoal = document.getElementById('to-goal');
+    const toTime = document.getElementById('to-time');
+    const toFill = document.getElementById('to-progress-fill');
+    const toPause = document.getElementById('to-pause');
+    const toDone = document.getElementById('to-done');
+    const toCancel = document.getElementById('to-cancel');
 
     function startTimer(task) {
       timerTaskId = task.id;
       timerRemaining = TIMER_DURATION;
       timerPaused = false;
-      timerTaskName.textContent = task.text;
-      pauseBtn.textContent = 'Pause';
+      timerRunning = true;
+      task.timerStartY = task.y;
+
+      toTask.textContent = task.text;
+      const goalText = task.goalId ? (goals.find(g => g.id === task.goalId)?.text || '') : '';
+      toGoal.textContent = goalText ? 'Goal: ' + goalText : '';
+      toPause.textContent = 'Pause';
       updateTimerDisplay();
-      overlay.classList.add('active');
+      timerOverlay.classList.add('active');
+      render();
 
       clearInterval(timerInterval);
       timerInterval = setInterval(() => {
-        if (!timerPaused) {
-          timerRemaining--;
-          updateTimerDisplay();
-          if (timerRemaining <= 0) {
-            clearInterval(timerInterval);
-            timerDisplay.textContent = "Time's up!";
-            timerProgressBar.style.width = '100%';
-            timerProgressBar.style.background = '#2ecc71';
-          }
+        if (timerPaused) return;
+        timerRemaining--;
+        updateTimerDisplay();
+
+        const pct = (TIMER_DURATION - timerRemaining) / TIMER_DURATION;
+        const t = tasks.find(t => t.id === timerTaskId);
+        if (t) {
+          const maxRise = 30;
+          t.y = t.timerStartY - (pct * maxRise);
+          if (t.y < 2) t.y = 2;
+          t.quadrant = quadrantFromPos(t.x, t.y);
+        }
+
+        if (timerRemaining <= 0) {
+          clearInterval(timerInterval);
+          toTime.textContent = "Done!";
+          toFill.style.background = '#2ecc71';
         }
       }, 1000);
     }
@@ -532,35 +1456,195 @@
     function updateTimerDisplay() {
       const m = Math.floor(timerRemaining / 60);
       const s = timerRemaining % 60;
-      timerDisplay.textContent = `${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
+      toTime.textContent = `${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
       const pct = ((TIMER_DURATION - timerRemaining) / TIMER_DURATION) * 100;
-      timerProgressBar.style.width = pct + '%';
-      timerProgressBar.style.background = '#6c63ff';
+      toFill.style.width = pct + '%';
+      toFill.style.background = '#6c63ff';
     }
 
-    pauseBtn.addEventListener('click', () => {
-      timerPaused = !timerPaused;
-      pauseBtn.textContent = timerPaused ? 'Resume' : 'Pause';
-    });
-
-    stopBtn.addEventListener('click', () => {
+    function stopTimer(keepPosition) {
       clearInterval(timerInterval);
-      overlay.classList.remove('active');
-    });
+      timerRunning = false;
+      timerOverlay.classList.remove('active');
+      const t = tasks.find(t => t.id === timerTaskId);
+      if (t) {
+        // Record time spent
+        const elapsed = TIMER_DURATION - timerRemaining;
+        t.timeSpent = (t.timeSpent || 0) + elapsed;
 
-    doneBtn.addEventListener('click', () => {
-      clearInterval(timerInterval);
-      overlay.classList.remove('active');
-      const task = tasks.find(t => t.id === timerTaskId);
-      if (task) {
-        task.completed = true;
+        if (!keepPosition && t.timerStartY != null) {
+          t.y = t.timerStartY;
+          t.quadrant = quadrantFromPos(t.x, t.y);
+        }
+        delete t.timerStartY;
         saveTasks();
-        render();
       }
+      timerTaskId = null;
+      render();
+    }
+
+    toPause.addEventListener('click', () => {
+      timerPaused = !timerPaused;
+      toPause.textContent = timerPaused ? 'Resume' : 'Pause';
     });
+
+    toCancel.addEventListener('click', () => stopTimer(false));
+
+    toDone.addEventListener('click', () => {
+      const t = tasks.find(t => t.id === timerTaskId);
+      if (t) { t.completed = true; recordCompletion(); }
+      stopTimer(true);
+      renderProgress();
+    });
+
+    // ========== PROGRESS HISTORY ==========
+    function todayStr() {
+      return new Date().toISOString().slice(0, 10); // YYYY-MM-DD
+    }
+
+    function loadHistory() {
+      const saved = localStorage.getItem(HISTORY_KEY);
+      return saved ? JSON.parse(saved) : {};
+    }
+
+    function saveHistory(history) {
+      localStorage.setItem(HISTORY_KEY, JSON.stringify(history));
+    }
+
+    function recordCompletion() {
+      const history = loadHistory();
+      const day = todayStr();
+      history[day] = (history[day] || 0) + 1;
+      saveHistory(history);
+    }
+
+    const progressCanvas = document.getElementById('progress-canvas');
+    const progressTotal = document.getElementById('progress-total');
+
+    function formatTimeSpent(secs) {
+      if (!secs || secs <= 0) return '';
+      const h = Math.floor(secs / 3600);
+      const m = Math.floor((secs % 3600) / 60);
+      if (h > 0) return h + 'h ' + m + 'm';
+      return m + 'm';
+    }
+
+    function renderProgress() {
+      const history = loadHistory();
+      const ctx = progressCanvas.getContext('2d');
+      const dpr = window.devicePixelRatio || 1;
+      const W = 720;
+      const H = 180;
+      progressCanvas.width = W * dpr;
+      progressCanvas.height = H * dpr;
+      progressCanvas.style.width = W + 'px';
+      progressCanvas.style.height = H + 'px';
+      ctx.scale(dpr, dpr);
+      ctx.clearRect(0, 0, W, H);
+
+      // Last 14 days
+      const days = [];
+      const today = new Date();
+      for (let i = 13; i >= 0; i--) {
+        const d = new Date(today);
+        d.setDate(d.getDate() - i);
+        days.push(d.toISOString().slice(0, 10));
+      }
+
+      const counts = days.map(d => history[d] || 0);
+      const maxCount = Math.max(...counts, 1);
+      const totalCompleted = counts.reduce((a, b) => a + b, 0);
+      progressTotal.textContent = totalCompleted + ' completed in 14 days';
+
+      const padL = 36, padR = 16, padT = 20, padB = 32;
+      const chartW = W - padL - padR;
+      const chartH = H - padT - padB;
+      const stepX = chartW / (days.length - 1 || 1);
+
+      // Y-axis gridlines + labels
+      const yTicks = Math.min(maxCount, 5);
+      ctx.textAlign = 'right';
+      ctx.textBaseline = 'middle';
+      ctx.font = '9px -apple-system, sans-serif';
+      for (let i = 0; i <= yTicks; i++) {
+        const val = Math.round((maxCount / yTicks) * i);
+        const y = padT + chartH - (chartH * (val / maxCount));
+        ctx.strokeStyle = '#1a1a1a';
+        ctx.lineWidth = 1;
+        ctx.beginPath();
+        ctx.moveTo(padL, y);
+        ctx.lineTo(W - padR, y);
+        ctx.stroke();
+        ctx.fillStyle = '#333';
+        ctx.fillText(val, padL - 6, y);
+      }
+
+      // X-axis date labels
+      const monthNames = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'top';
+      days.forEach((dayStr, i) => {
+        const x = padL + i * stepX;
+        const d = new Date(dayStr + 'T12:00:00');
+        const isToday = dayStr === todayStr();
+        const label = isToday ? 'Today' : (d.getDate() + ' ' + monthNames[d.getMonth()]);
+        ctx.fillStyle = isToday ? '#2ecc71' : '#333';
+        ctx.font = (isToday ? 'bold ' : '') + '9px -apple-system, sans-serif';
+        ctx.fillText(label, x, padT + chartH + 8);
+      });
+
+      // Area fill
+      ctx.beginPath();
+      counts.forEach((count, i) => {
+        const x = padL + i * stepX;
+        const y = padT + chartH - (chartH * (count / maxCount));
+        if (i === 0) ctx.moveTo(x, y);
+        else ctx.lineTo(x, y);
+      });
+      ctx.lineTo(padL + (days.length - 1) * stepX, padT + chartH);
+      ctx.lineTo(padL, padT + chartH);
+      ctx.closePath();
+      ctx.fillStyle = 'rgba(108, 99, 255, 0.08)';
+      ctx.fill();
+
+      // Line
+      ctx.beginPath();
+      counts.forEach((count, i) => {
+        const x = padL + i * stepX;
+        const y = padT + chartH - (chartH * (count / maxCount));
+        if (i === 0) ctx.moveTo(x, y);
+        else ctx.lineTo(x, y);
+      });
+      ctx.strokeStyle = '#6c63ff';
+      ctx.lineWidth = 2;
+      ctx.lineJoin = 'round';
+      ctx.stroke();
+
+      // Dots + count labels
+      counts.forEach((count, i) => {
+        const x = padL + i * stepX;
+        const y = padT + chartH - (chartH * (count / maxCount));
+        const isToday = days[i] === todayStr();
+
+        ctx.beginPath();
+        ctx.arc(x, y, isToday ? 5 : 3, 0, Math.PI * 2);
+        ctx.fillStyle = isToday ? '#2ecc71' : '#6c63ff';
+        ctx.fill();
+
+        if (count > 0) {
+          ctx.fillStyle = '#666';
+          ctx.font = '9px -apple-system, sans-serif';
+          ctx.textAlign = 'center';
+          ctx.textBaseline = 'bottom';
+          ctx.fillText(count, x, y - 6);
+        }
+      });
+    }
 
     // --- Init ---
     render();
+    renderGoals();
+    renderProgress();
   </script>
 </body>
 </html>
